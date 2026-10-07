@@ -1,1 +1,88 @@
+# 📄 ATS Resume Analyzer
 
+Upload a resume (PDF, DOCX or TXT) and get:
+
+- An **ATS score (0-100)** with a 5-category breakdown
+- Strengths, weaknesses and **missing keywords**
+- Section-by-section **improvement suggestions** with rewritten examples
+- Optional **job description** matching for better keyword analysis
+- A downloadable Markdown report
+
+Built with [Streamlit](https://streamlit.io) and Google **Gemini Flash**.
+
+## How the score works
+
+Gemini rates five categories from 0-100. The final score is a weighted average calculated in code,
+so it is consistent and transparent:
+
+| Category | Weight |
+|---|---|
+| Keyword match | 30% |
+| ATS-friendly formatting | 20% |
+| Content quality | 20% |
+| Impact & metrics | 15% |
+| Structure & sections | 15% |
+
+> This is an AI-based estimate, not the output of a real ATS (Workday, Greenhouse, etc.). Use it as guidance.
+
+## Run locally
+
+1. Install Python 3.10+.
+2. Get a free API key: https://aistudio.google.com/app/apikey
+3. Install and run:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+4. Paste your API key in the sidebar (or set it once, see below).
+
+### Optional: set the key so you don't paste it each time
+
+Create `.streamlit/secrets.toml` (never commit this file):
+
+```toml
+GEMINI_API_KEY = "your-key-here"
+```
+
+or set an environment variable: `export GEMINI_API_KEY="your-key-here"`.
+
+## Deploy on Streamlit Community Cloud
+
+1. Push this repo to GitHub (public or private).
+2. Go to https://share.streamlit.io and sign in with GitHub.
+3. Click **Create app** -> **Deploy a public app from GitHub**.
+4. Choose your repository, branch `main`, and main file path `app.py`.
+5. Open **Advanced settings** -> **Secrets** and add:
+   ```toml
+   GEMINI_API_KEY = "your-key-here"
+   ```
+6. Click **Deploy**. The first build takes a few minutes.
+
+If you skip step 5, users can paste their own key in the sidebar.
+
+## Configuration
+
+| Setting | Where | Default |
+|---|---|---|
+| Gemini model | Sidebar, or `DEFAULT_MODEL` in `app.py` | `gemini-flash-latest` |
+| Max file size | `MAX_FILE_MB` in `app.py` | 5 MB |
+| Score weights | `WEIGHTS` in `app.py` | see table above |
+
+If you get a "model not found" error, change the model name in the sidebar to a current Flash model
+(see https://ai.google.dev/gemini-api/docs/models).
+
+## Limitations
+
+- Scanned / image-only PDFs have no text to read (and ATS systems can't read them either).
+- Resumes are sent to Google's Gemini API. Don't upload data you aren't comfortable sharing.
+- Free-tier Gemini keys have rate limits.
+
+## Project structure
+
+```
+app.py            # Streamlit app + Gemini logic
+requirements.txt  # Python dependencies
+README.md         # This file
+```
